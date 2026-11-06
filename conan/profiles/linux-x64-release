@@ -1,0 +1,4 @@
+include(linux-x64)
+
+[settings]
+build_type=Release

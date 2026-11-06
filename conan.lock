@@ -1,0 +1,12 @@
+{
+    "version": "0.5",
+    "requires": [
+        "naru_support/0.1.0#d61ed4ca45f16f6de0ec8174465781be%1793104182.2703812",
+        "gtest/1.18.0@moru/stable#6471f274496d968131d1d4d4d71827e1%1793091746.6868176"
+    ],
+    "build_requires": [
+        "cmake/4.4.3#platform"
+    ],
+    "python_requires": [],
+    "config_requires": []
+}

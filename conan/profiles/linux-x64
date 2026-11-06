@@ -1,0 +1,28 @@
+{% set tools = os.getenv("NARU_LINUX_TOOLS_ROOT", "/mnt/c/Users/leejo/workspace/develope/tools/linux-x64") %}
+
+[settings]
+os=Linux
+arch=x86_64
+compiler=clang
+compiler.version=23
+compiler.cppstd=23
+compiler.libcxx=libstdc++11
+
+[platform_tool_requires]
+cmake/4.4.3
+
+[conf]
+tools.build:compiler_executables={"c":"{{ tools }}/llvm/bin/clang","cpp":"{{ tools }}/llvm/bin/clang++"}
+tools.cmake:cmake_program={{ tools }}/cmake/bin/cmake
+tools.cmake.cmaketoolchain:generator=Ninja
+tools.cmake.cmaketoolchain:user_presets=
+tools.cmake.cmaketoolchain:user_toolchain=["{{ profile_dir }}/../../cmake/toolchains/linux-x64.cmake"]
+tools.cmake.cmaketoolchain:extra_variables={"CMAKE_MAKE_PROGRAM":{"value":"{{ tools }}/ninja/ninja","cache":True,"type":"FILEPATH"}}
+
+[buildenv]
+NARU_LINUX_TOOLS_ROOT={{ tools }}
+CC={{ tools }}/llvm/bin/clang
+CXX={{ tools }}/llvm/bin/clang++
+CMAKE_GENERATOR=Ninja
+CMAKE_TOOLCHAIN_FILE=!
+PATH=+(path){{ tools }}/llvm/bin:{{ tools }}/cmake/bin:{{ tools }}/ninja

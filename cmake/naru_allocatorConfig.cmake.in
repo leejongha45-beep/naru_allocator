@@ -1,0 +1,6 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(naru_support CONFIG REQUIRED)
+include("${CMAKE_CURRENT_LIST_DIR}/naru_allocatorTargets.cmake")
+check_required_components(naru_allocator)

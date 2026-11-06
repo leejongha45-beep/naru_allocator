@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 4.4)
+project(naru_allocator_consumer LANGUAGES CXX)
+
+find_package(naru_allocator CONFIG REQUIRED)
+get_target_property(package_type naru::allocator TYPE)
+if (NOT package_type STREQUAL "STATIC_LIBRARY")
+    message(FATAL_ERROR "naru_allocator must provide a static archive.")
+endif ()
+get_target_property(public_includes naru::allocator INTERFACE_INCLUDE_DIRECTORIES)
+foreach (directory IN LISTS public_includes)
+    if (directory MATCHES "[/\\]private([/\\]|$)")
+        message(FATAL_ERROR "Private headers leaked into the package interface.")
+    endif ()
+endforeach ()
+
+add_executable(package_consumer main.cpp)
+target_link_libraries(package_consumer PRIVATE naru::allocator)
+
+add_executable(owned_package_consumer owned_consumer.cpp)
+target_link_libraries(owned_package_consumer PRIVATE naru::allocator)

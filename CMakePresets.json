@@ -1,0 +1,210 @@
+{
+  "version": 4,
+  "include": [
+    "cmake/NaruPresets.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "windows-x64-debug",
+      "displayName": "x64 Debug",
+      "inherits": "naru-debug",
+      "toolchainFile": "${sourceDir}/build/${presetName}/conan/conan_toolchain.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "C:/Users/leejo/workspace/develope/tools/ninja/1.13.2/ninja.exe",
+        "NARU_PRESET_ARCH": "x64"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "LLVM x64"
+        }
+      }
+    },
+    {
+      "name": "windows-x64-release",
+      "displayName": "x64 Release",
+      "inherits": "naru-release",
+      "toolchainFile": "${sourceDir}/build/${presetName}/conan/conan_toolchain.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "C:/Users/leejo/workspace/develope/tools/ninja/1.13.2/ninja.exe",
+        "NARU_PRESET_ARCH": "x64"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "LLVM x64"
+        }
+      }
+    },
+    {
+      "name": "windows-x64-relwithdebinfo",
+      "displayName": "x64 RelWithDebInfo",
+      "inherits": "naru-relwithdebinfo",
+      "toolchainFile": "${sourceDir}/build/${presetName}/conan/conan_toolchain.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "C:/Users/leejo/workspace/develope/tools/ninja/1.13.2/ninja.exe",
+        "NARU_PRESET_ARCH": "x64"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "LLVM x64"
+        }
+      }
+    },
+    {
+      "name": "linux-x64-debug",
+      "displayName": "WSL x64 Debug",
+      "inherits": "naru-debug",
+      "toolchainFile": "${sourceDir}/build/${presetName}/conan/conan_toolchain.cmake",
+      "environment": {
+        "NARU_LINUX_TOOLS_ROOT": "/mnt/c/Users/leejo/workspace/develope/tools/linux-x64",
+        "PATH": "$env{NARU_LINUX_TOOLS_ROOT}/llvm/bin:$env{NARU_LINUX_TOOLS_ROOT}/cmake/bin:$env{NARU_LINUX_TOOLS_ROOT}/ninja:$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "$env{NARU_LINUX_TOOLS_ROOT}/ninja/ninja"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "WSL x64"
+        }
+      }
+    },
+    {
+      "name": "linux-x64-release",
+      "displayName": "WSL x64 Release",
+      "inherits": "naru-release",
+      "toolchainFile": "${sourceDir}/build/${presetName}/conan/conan_toolchain.cmake",
+      "environment": {
+        "NARU_LINUX_TOOLS_ROOT": "/mnt/c/Users/leejo/workspace/develope/tools/linux-x64",
+        "PATH": "$env{NARU_LINUX_TOOLS_ROOT}/llvm/bin:$env{NARU_LINUX_TOOLS_ROOT}/cmake/bin:$env{NARU_LINUX_TOOLS_ROOT}/ninja:$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "$env{NARU_LINUX_TOOLS_ROOT}/ninja/ninja"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "WSL x64"
+        }
+      }
+    },
+    {
+      "name": "linux-x64-relwithdebinfo",
+      "displayName": "WSL x64 RelWithDebInfo",
+      "inherits": "naru-relwithdebinfo",
+      "toolchainFile": "${sourceDir}/build/${presetName}/conan/conan_toolchain.cmake",
+      "environment": {
+        "NARU_LINUX_TOOLS_ROOT": "/mnt/c/Users/leejo/workspace/develope/tools/linux-x64",
+        "PATH": "$env{NARU_LINUX_TOOLS_ROOT}/llvm/bin:$env{NARU_LINUX_TOOLS_ROOT}/cmake/bin:$env{NARU_LINUX_TOOLS_ROOT}/ninja:$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "$env{NARU_LINUX_TOOLS_ROOT}/ninja/ninja"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "WSL x64"
+        }
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-x64-debug",
+      "configurePreset": "windows-x64-debug"
+    },
+    {
+      "name": "windows-x64-release",
+      "configurePreset": "windows-x64-release"
+    },
+    {
+      "name": "windows-x64-relwithdebinfo",
+      "configurePreset": "windows-x64-relwithdebinfo"
+    },
+    {
+      "name": "linux-x64-debug",
+      "configurePreset": "linux-x64-debug"
+    },
+    {
+      "name": "linux-x64-release",
+      "configurePreset": "linux-x64-release"
+    },
+    {
+      "name": "linux-x64-relwithdebinfo",
+      "configurePreset": "linux-x64-relwithdebinfo"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "windows-x64-debug",
+      "configurePreset": "windows-x64-debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "windows-x64-release",
+      "configurePreset": "windows-x64-release",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "windows-x64-relwithdebinfo",
+      "configurePreset": "windows-x64-relwithdebinfo",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "linux-x64-debug",
+      "configurePreset": "linux-x64-debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "linux-x64-release",
+      "configurePreset": "linux-x64-release",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "linux-x64-relwithdebinfo",
+      "configurePreset": "linux-x64-relwithdebinfo",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    }
+  ]
+}
