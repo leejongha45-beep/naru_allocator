@@ -2,6 +2,73 @@
 
 독립 C++23 정적 라이브러리 패키지. Conan 참조는 `naru_allocator/0.1.0`, CMake 타깃은 `naru::allocator`다.
 
+## 아키텍처
+
+```mermaid
+flowchart TB
+    LIB["naru_allocator<br/>C++23 정적 라이브러리"]
+
+    subgraph GROUP["GroupAllocator"]
+        GAPI["공개 API<br/>galloc · greserve · gfree · gclean"]
+        GIMPL["GroupAllocator::Impl<br/>크기 변환 · 할당 흐름"]
+        STORAGE["MemorySegListStorage"]
+
+        GAPI -->|"StaticPimpl 내부 저장"| GIMPL
+        GIMPL --> STORAGE
+
+        STATE["CoreGroupHeap × 256<br/>VM 시작 주소 · currentOffset<br/>예약/커밋 페이지 정보"]
+        LOCK["std::mutex × 256<br/>그룹별 잠금"]
+        FREE["Free MemorySegListVector × 256<br/>크기별 Free 리스트"]
+        USED["Used MemorySegListVector × 256<br/>크기별 Used 리스트"]
+
+        STORAGE --> STATE
+        STORAGE --> LOCK
+        STORAGE --> FREE
+        STORAGE --> USED
+
+        FLIST["MemorySegList<br/>Free 구간의 이중 연결 리스트<br/>삭제한 노드 슬롯 재사용"]
+        ULIST["MemorySegList<br/>Used 구간의 이중 연결 리스트<br/>삭제한 노드 슬롯 재사용"]
+        SORTED["SortedFreeSegVector<br/>Free 주소와 크기 수집<br/>주소순 정렬 · 인접 구간 병합"]
+
+        FREE --> FLIST
+        USED --> ULIST
+        FREE --> SORTED
+
+        GHEAP["그룹별 데이터 VM 영역"]
+        STATE --> GHEAP
+        FLIST -.->|"구간 시작 주소 참조"| GHEAP
+        ULIST -.->|"구간 시작 주소 참조"| GHEAP
+    end
+
+    subgraph OWNED["OwnedAllocator"]
+        OAPI["공개 API<br/>createVal · oalloc · ofree"]
+        OIMPL["OwnedAllocator::Impl<br/>원소별 할당 단위 · 할당 커서<br/>예약/커밋 크기"]
+        OHEAP["인스턴스별 데이터 VM 영역<br/>Bump-pointer 순차 할당"]
+
+        OAPI -->|"StaticPimpl 내부 저장"| OIMPL
+        OIMPL --> OHEAP
+    end
+
+    LIB --> GAPI
+    LIB --> OAPI
+
+    PLATFORM["공통 VM 인터페이스<br/>platform/memory.hpp<br/>페이지 크기 조회 · 예약 · 커밋 · 해제"]
+
+    STORAGE -.->|"데이터·메타데이터 VM 요청"| PLATFORM
+    OIMPL -.->|"데이터 VM 요청"| PLATFORM
+
+    PLATFORM --> LINUX["Linux 백엔드<br/>sysconf<br/>mmap · mprotect · munmap"]
+    PLATFORM --> WINDOWS["Windows 백엔드<br/>GetSystemInfo<br/>VirtualAlloc · VirtualFree"]
+
+    SUPPORT["naru_support<br/>StaticPimpl<br/>로그 · 계약 검사<br/>결과 반환형 · 재시도"]
+    LIB -.->|"의존 패키지"| SUPPORT
+```
+
+Free·Used 리스트의 노드는 메타데이터용 VM에 저장되고, 각 노드가 가진 시작 주소가 그룹 데이터 VM의 구간을 가리킵니다.
+
+## 상세 설명
+
+
 MORU의 `libs/common/moru_allocator` 구현과 원본 테스트를 가져왔다. `moru`/`MORU`를 `naru`/`NARU`로, 기존 공통 오류 타입 참조를 `ErrorCode`로 바꿨다. 재시도 헤더의 include 경로는 `naru/support/retry.hpp`로 맞췄다.
 
 메모리 시스템콜의 실패는 플랫폼 래퍼 안에서 OS 오류와 요청 정보를 기록한 뒤 `fatalExit()`로 종료한다. 정상 반환은 성공을 보장하며, `reserveCommonMemory()`는 `void*`, 커밋·디커밋·해제는 `void`를 반환한다. 호출부에서 `EX_*`로 시스템콜 오류를 전달받거나 성공 여부를 다시 검사하지 않는다. `MemoryState`와 `queryMemoryState()`는 각 플랫폼 메모리 구현의 익명 네임스페이스 안에서만 사용한다. Linux는 `/proc/self/maps`를 조회하며, 할당자 내부 규칙에 따라 매핑 없음은 `FREE`, `PROT_NONE`은 `RESERVED`, `PROT_READ | PROT_WRITE`는 `COMMITTED`로 판단한다. Linux의 상태 조회는 Debug `NARU_CHECK`에서 사용한다.
